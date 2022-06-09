@@ -1,5 +1,4 @@
 import requests
-from bs4 import BeautifulSoup
 import json
 
 def create_request_and_return_json_first_link(link) -> list:
