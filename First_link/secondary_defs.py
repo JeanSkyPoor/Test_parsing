@@ -105,7 +105,7 @@ def pop_raw_info_from_json_first_link(i) -> list:
 
 def transform_working_hours_first_link(data, status) -> dict:
     if status == "Closed":
-        return "Closed"
+        return ["closed"]
 
     if type(status) == type(None):
         return "Cannot find status"
