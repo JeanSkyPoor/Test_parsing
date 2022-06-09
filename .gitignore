@@ -3,3 +3,5 @@ example.py
 .pytest_cache
 __pycache__
 store.get_restaurants.json
+.vscode
+sample_first_link.json
