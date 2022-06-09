@@ -79,20 +79,38 @@ def transform_phone_data_first_link(phones) -> list:
     return fast_list
 
 
+def get_status_first_link(i) -> str:
+    """
+    return status like 'Open' or 'Cannot find status'
+    """
+    try:
+        status = i['storePublic']['status']
+        return status
+    except KeyError:
+        return "Cannot find status"
+
+
 def pop_raw_info_from_json_first_link(i) -> list:
     """
-    return list [address, latlon, name, phones, working_hours]
+    return list [address, latlon, name, phones, working_hours, status]
     """
     address = get_address_from_json_first_link(i)
     latlon = get_latlon_from_json_first_link(i)
     name = get_name_from_json_first_link(i)
     phones = get_phone_from_json_first_link(i)
     working_hours = get_working_hour_from_json_first_link(i)
-    return [address, latlon, name, phones, working_hours]
+    status = get_status_first_link(i)
+    return [address, latlon, name, phones, working_hours, status]
 
 
-def transform_working_hours_first_link(data) -> dict:
-    if data =="Cannot find working hours":
+def transform_working_hours_first_link(data, status) -> dict:
+    if status == "Closed":
+        return "Closed"
+
+    if type(status) == type(None):
+        return "Cannot find status"
+
+    if status == "Cannot find working hours":
         return "Cannot find working hours"
 
     map_days = {'Monday': 'Пн',
@@ -115,7 +133,7 @@ def transform_working_hours_first_link(data) -> dict:
         return fast_dict
 
     except TypeError:
-        return ['closed']
+        return ["Cannot find working hours"]
      
 
 def create_json_before_save_first_link(data) -> dict:
@@ -144,7 +162,7 @@ def solve_first_link(data) -> None:
     for i in data:
         raw_data_from_json = pop_raw_info_from_json_first_link(i)
         raw_data_from_json[3] = transform_phone_data_first_link(raw_data_from_json[3])
-        raw_data_from_json[4] = transform_working_hours_first_link(raw_data_from_json[4])
+        raw_data_from_json[4] = transform_working_hours_first_link(raw_data_from_json[4], raw_data_from_json[5])
 
         fast_list.append(create_json_before_save_first_link(raw_data_from_json))
     print(f"Кол-во элементов в записанном файле: {len(fast_list)}") 
