@@ -9,7 +9,7 @@ def create_request_and_return_json_first_link(link) -> list:
 
 def get_address_from_json_first_link(data) -> str:
     """
-    return correct address form like '195027, Санкт-Петербург, Брантовская дорога, 3'
+    return correct address form like '195027, Санкт-Петербург, Брантовская дорога, 3' or 'StreetAddress not found'
     """
     try:
         address = data['storePublic']['contacts']['streetAddress']['ru'] 
@@ -20,7 +20,7 @@ def get_address_from_json_first_link(data) -> str:
 
 def get_latlon_from_json_first_link(data) -> list:
     """
-    return correct latlon form like [59.940197, 30.41823]
+    return correct latlon form like [59.940197, 30.41823] or 'Cannot find latlon coordinate'
     """
     try:
         latlon = data['storePublic']['contacts']['coordinates']['geometry']['coordinates'] 
@@ -31,7 +31,7 @@ def get_latlon_from_json_first_link(data) -> list:
 
 def get_name_from_json_first_link(data) -> str:
     """
-    return correct name form like 'KFC Охта Молл Санкт-Петербург'
+    return correct name form like 'KFC Охта Молл Санкт-Петербург' or 'Cannot find restaurant name'
     """
     try:
         name = data['storePublic']['title']['ru'] 
@@ -42,7 +42,7 @@ def get_name_from_json_first_link(data) -> str:
 
 def get_phone_from_json_first_link(data) -> dict:
     """
-    return raw phone data like {'number': '+79218976467', 'extensions': []}
+    return raw phone data like {'number': '+79218976467', 'extensions': []} or 'Cannot find phone numbers'
     """
     try:
         phone = data['storePublic']['contacts']['phone'] 
@@ -53,7 +53,7 @@ def get_phone_from_json_first_link(data) -> dict:
 
 def get_working_hour_from_json_first_link(data) -> list:
     """
-    return raw working_hours data form like [{'weekDay': 1, 'weekDayName': 'Monday', 'timeFrom': '10:00:00', 'timeTill': '21:45:00'},...
+    return raw working_hours data form like [{'weekDay': 1, 'weekDayName': 'Monday', 'timeFrom': '10:00:00', 'timeTill': '21:45:00'},... or 'Cannot find working hours'
     """
     try:
         working_hours = data['storePublic']['openingHours']['regularDaily'] 
@@ -64,7 +64,7 @@ def get_working_hour_from_json_first_link(data) -> list:
 
 def transform_phone_data_first_link(phones) -> list:
     """
-    return correct data phones form like ['+79218976467', ['+awdaw', 'awdawd']]
+    return correct data phones form like ['+79218976467', ['+awdaw', 'awdawd']] or 'Cannot find phone numbers'
     """
     if phones == "Cannot find phone numbers":
         return "Cannot find phone numbers"
