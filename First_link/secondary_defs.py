@@ -129,7 +129,8 @@ def transform_working_hours_first_link(data, status) -> dict:
             working_hours = f'{start_day}-{end_day}'
 
             formatted_day = map_days[i['weekDayName']]
-            fast_dict[formatted_day] = working_hours   
+            fast_dict[formatted_day] = working_hours 
+         
         return fast_dict
 
     except TypeError:
@@ -153,6 +154,7 @@ def save_json_file_first_link(data) -> None:
   
     with open("sample_first_link.json", "w") as outfile:
         outfile.write(json_object)
+
 
 
 def solve_first_link(data) -> None:
