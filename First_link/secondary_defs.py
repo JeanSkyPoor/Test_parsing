@@ -23,6 +23,7 @@ def get_latlon_from_json_first_link(data) -> list:
     """
     try:
         latlon = data['storePublic']['contacts']['coordinates']['geometry']['coordinates'] 
+        
         return latlon
     except KeyError:
         return "Cannot find latlon coordinate"
@@ -103,6 +104,49 @@ def pop_raw_info_from_json_first_link(i) -> list:
     return [address, latlon, name, phones, working_hours, status]
 
 
+def format_data(raw_data):
+    result = []
+    for key, value in raw_data.items():
+        result.append({"day": key, "time": value})
+
+    return result
+
+
+def create_working_day_groups(raw_working_data):
+    current_day = raw_working_data[0]
+    groups = []
+    current_pair = []
+    for index, day in enumerate(raw_working_data):
+        if index == len(raw_working_data) - 1:
+            current_pair.append(day)
+            groups.append(current_pair)
+            break
+
+        if day['time'] == current_day['time']:
+            current_pair.append(day)
+        else:
+            groups.append(current_pair)
+            current_day = day
+            current_pair = [day]
+
+    return groups
+
+
+def format_working_day_groups(groups):
+    result = []
+
+    for group in groups:
+        if len(group) == 1:
+            result.append(f'{group[0]["day"]} {group[0]["time"]}')
+        else:
+            first_item = group[0]
+            last_item = group[-1]
+
+            result.append(f'{first_item["day"]}-{last_item["day"]} {first_item["time"]}')
+
+    return result
+
+
 def transform_working_hours_first_link(data, status) -> dict:
     if status == "Closed":
         return ["closed"]
@@ -113,13 +157,13 @@ def transform_working_hours_first_link(data, status) -> dict:
     if status == "Cannot find working hours":
         return "Cannot find working hours"
 
-    map_days = {'Monday': 'Пн',
-        'Tuesday': 'Вт',
-        'Wednesday': 'Ср',
-        'Thursday': 'Чт',
-        'Friday':'Пт',
-        'Saturday': 'Сб',
-        'Sunday': 'Вс'}
+    map_days = {'Monday': 'пн',
+        'Tuesday': 'вт',
+        'Wednesday': 'ср',
+        'Thursday': 'чт',
+        'Friday':'пт',
+        'Saturday': 'сб',
+        'Sunday': 'вс'}
 
     fast_dict = {}
     try:
@@ -130,8 +174,11 @@ def transform_working_hours_first_link(data, status) -> dict:
 
             formatted_day = map_days[i['weekDayName']]
             fast_dict[formatted_day] = working_hours 
-         
-        return fast_dict
+        
+        formatted_data = format_data(fast_dict)
+        working_day_groups = create_working_day_groups(formatted_data)
+        working_day_result = format_working_day_groups(working_day_groups)
+        return working_day_result
 
     except TypeError:
         return ["Cannot find working hours"]
@@ -154,7 +201,6 @@ def save_json_file_first_link(data) -> None:
   
     with open("sample_first_link.json", "w") as outfile:
         outfile.write(json_object)
-
 
 
 def solve_first_link(data) -> None:
