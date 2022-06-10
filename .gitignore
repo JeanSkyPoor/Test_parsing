@@ -6,3 +6,4 @@ store.get_restaurants.json
 .vscode
 sample_first_link.json
 sample_third_link.json
+config.py
