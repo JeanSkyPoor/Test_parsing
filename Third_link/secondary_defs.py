@@ -1,7 +1,9 @@
 import requests
 from bs4 import BeautifulSoup
 import json
-
+from config import *
+from geopy import GoogleV3
+from geopy.exc import GeocoderQueryError
 
 def get_soup_data(link):
     r = requests.get(link)
@@ -43,16 +45,28 @@ def get_all_info(shop) -> list:
 def create_json_before_save(data) -> dict:
     fast_dict = {
         "address": data[0],
+        "latlon": data[3],
         "name": data[1],
         'phones': data[2]
     }
     return fast_dict
 
+def get_coordinates(address):
+    try:
+        correct_address = f'Минск, {address[0]}'
+        coordinates = GoogleV3(api_key=API_key).geocode(correct_address)
+        address.append([coordinates.latitude, coordinates.longitude])
+        return address
+    except GeocoderQueryError:
+        address.append(['Cannot reach map API'])
+        return address
+    
 
 def solve_third_link(data):
     fast_list = []
     for shop in data:
         created_info = get_all_info(shop)
+        created_info = get_coordinates(created_info)
         fast_list.append(create_json_before_save(created_info))
     
     save_json_file_third_link(fast_list)
