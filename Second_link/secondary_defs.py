@@ -2,9 +2,11 @@ import requests
 from bs4 import BeautifulSoup
 import json
 
+
 def create_request_json(link):
     r = requests.get(link).json()
     return r
+
 
 def create_request_and_return_soup(link):
     r = requests.get(link)
@@ -70,6 +72,7 @@ def create_dict(address, latlon, name, phones, working_hours):
         "working_hours": working_hours
     }
     return fast_dict
+
 
 def save_json_file_second_link(data) -> None:
 
